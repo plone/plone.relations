@@ -99,7 +99,7 @@ This would generally be registered as a named local utility providing
 the ``IComplexRelationshipContainer`` interface, but we will use it
 directly.  Now we make some relationships, using the provided
 ``Relationship`` class which implements ``IRelationship`` and has a
-built in adapter to IComplexRelationship.  To properly illustrate the
+built-in adapter to IComplexRelationship.  To properly illustrate the
 potential complexity of relationships we will use some characters and
 contexts from the 1974 film _Chinatown_::
 
@@ -109,11 +109,19 @@ contexts from the 1974 film _Chinatown_::
     >>> rel1 = Relationship((app['noah'],), (app['evelyn'],), relation='parent')
     >>> verifyObject(interfaces.IRelationship, rel1)
     True
+    >>> interfaces.IComplexRelationship(rel1).relation
+    'parent'
     >>> container.add(rel1)
     >>> rel2 = Relationship((app['hollis'],), (app['noah'],), relation='business-partner')
     >>> container.add(rel2)
 
-Then we add a relationship with a state:
+Note that there is a default adatper for IRelationship objects which
+provides IComplexRelationship using a simple attribute on the
+relationship.
+
+Then we add a relationship with a state, by directly applying the
+interface and adding the attribute (which is not such a great way to
+do this)::
 
     >>> rel3 = Relationship((app['hollis'],), (app['evelyn'],), relation='intimate')
     >>> rel3.state = 'married'
@@ -130,7 +138,7 @@ We currently have a simple tree:
    evelyn <-(intimate:married)- hollis
 
 Now we can make queries against this simple data set, like finding
-objects for which a particular object is the source or target::
+objects for which a another object is the source or target::
 
     >>> list(container.findTargets(source=app['hollis']))
     [<Demo noah>, <Demo evelyn>]
@@ -172,10 +180,13 @@ the specified parameters.  Let's look at the ways that ``hollis`` and
 Modifying Relationships
 ------------------------
 
-This method also allows us to access existing relationships directly,
-which is especially helpful if we want to alter them.  In this case
-``hollis`` has been _murdered_; so ``evelyn`` is now his widow. We
-express this with a state change on the relationship::
+The above method also allows us to access existing relationships
+directly, which is especially helpful when we want to alter them.  In
+this case ``hollis`` has been _murdered_; so ``evelyn`` is now his
+widow. We express this with a state change on the relationship, note that
+we have to reindex the relationship after applying the state directly
+to it, if we had used an adapter to provide the state, then it should
+have taken care of this for us when the attribute was set.::
 
     >>> relations = container.findRelationships(target=app['evelyn'], relation='intimate')
     >>> relations = list(relations)
@@ -196,7 +207,8 @@ find it the same way we did before, but also using out new state::
     >>> list(container.findTargets(source=app['hollis'], relation='intimate', state='happy'))
     []
 
-Now let's add some more relationships, including one unknown ``relation``::
+Now let's add some more relationships, including one with an unknown
+``relation``::
 
         noah <----(business-partner)---
          | (parent)                    |
@@ -221,7 +233,7 @@ Now let's add some more relationships, including one unknown ``relation``::
     []
 
 Note that we can find entries with empty parameters using None as the
-query.
+query argument.
 
 
 Finding if Objects Are Related
@@ -272,7 +284,8 @@ doesn't tell us much because there are potentially many different
 contexts for a client relationship.  In this case ``jake`` is a
 private investigator and the context is the ``investigation`` of
 ``hollis'`` murder.  This ``investigation`` object could consist of
-notes pertaining to the investigation or other relevant data::
+notes pertaining to the investigation or other relevant data.  We
+apply it to the relationship as a context::
 
     >>> list(container.findSources(target=app['jake'], relation='client',
     ...                            context=app['investigation']))
@@ -309,15 +322,15 @@ of ``hollis'`` business partner and father-in-law ``noah``::
 Multiple Relationship Chains and Cycles
 ---------------------------------------
 
-And an existing relationship becomes a little clearer, when we learn
-katherine is evelyn's sister:
+We've got a fairly complex graph, but an existing relationship becomes
+a little clearer, when we learn katherine is evelyn's sister::
 
     >>> murky = list(container.findRelationships(source=app['evelyn'],
     ...                                          target=app['katherine']))
     >>> evelyn_katherine = murky[0][0]
     >>> interfaces.IComplexRelationship(evelyn_katherine).relation = 'sibling'
 
-Now we have a much more complex graph:
+Here's the current relationship tree in ASCII form:
 
         (nemesis)---->noah <-----(business-partner)--
  [investigation]|      | (parent)                    |
@@ -330,8 +343,8 @@ Now we have a much more complex graph:
                 |  v        v
                 jake       katherine
 
-Tis complexity let's us see how the relationship finding mechanisms
-resolve, multiple relationship paths::
+This complexity will allow us to explore how the relationship query
+mechanisms resolve multiple relationship paths::
 
     >>> list(container.findTargets(source=app['jake'], context=app['investigation']))
     [<Demo evelyn>, <Demo noah>]
@@ -339,16 +352,17 @@ resolve, multiple relationship paths::
     [(<Relationship 'client' from (<Demo evelyn>,) to (<Demo jake>,)>,), (<Relationship 'intimate' from (<Demo jake>,) to (<Demo evelyn>,)>,), (<Relationship 'nemesis' from (<Demo jake>,) to (<Demo noah>,)>,)]
 
 The first findTargets example above shows all the people that are
-``jake's`` targets in the context of the investigation.  Then we
-have a map of all the relationships that were created in
-the context of the investigation:
+``jake's`` targets in the context of the investigation.  Then we have
+a map of all the relationships that apply in the context of the
+investigation.
 
 In the end of the film we discover some rather sinister connections
 between these characters.  ``Noah`` was ``hollis'`` murderer, and also
 had an inappropriate intimate relationship with his daughter
 ``evelyn`` which resulted in their daughter ``katherine``.  We add
 those relationships below (note how one can use multiple sources or
-targets for a single relationship)::
+targets for a single relationship with ``noah`` and ``evelyn`` the
+sources for their parental relationship with ``katherine``)::
 
     noah-(intimate[the past])->evelyn
        |\                     /
@@ -361,19 +375,20 @@ targets for a single relationship)::
      hollis
 
 
-    >>> rel8 = Relationship((app['noah'],),(app['evelyn'],), 'intimate')
+    >>> rel8 = Relationship((app['noah'],), (app['evelyn'],), 'intimate')
     >>> interfaces.IContextAwareRelationship(rel8).setContext(app['the past'])
     >>> container.add(rel8)
 
-    >>> rel9 = Relationship((app['noah'],),(app['hollis'],), 'murderer')
+    >>> rel9 = Relationship((app['noah'],), (app['hollis'],), 'murderer')
     >>> container.add(rel9)
 
-    >>> rel10 = Relationship((app['evelyn'], app['noah']),(app['katherine'],), 'parent')
+    >>> rel10 = Relationship((app['evelyn'], app['noah']), (app['katherine'],),
+    ...                      'parent')
     >>> container.add(rel10)
 
-At this point the relationship tree is far too complex and looping to
-draw understandably using ascii art. However, it's no trouble for our
-relationship container to inspect it::
+At this point the relationship tree is far too complex and full of
+loops to draw understandably using ascii art. However, it's no trouble
+for our relationship container to inspect it::
 
     >>> list(container.findSources(target=app['katherine'], relation='parent', maxDepth=None))
     [<Demo noah>, <Demo evelyn>]
@@ -383,13 +398,14 @@ relationship container to inspect it::
     [(<Relationship 'parent' from (<Demo evelyn>, <Demo noah>) to (<Demo katherine>,)>,), (<Relationship 'parent' from (<Demo noah>,) to (<Demo evelyn>,)>, <Relationship 'parent' from (<Demo evelyn>, <Demo noah>) to (<Demo katherine>,)>)]
 
 This is the same query we tried earlier when we were unclear of
-relation to ``noah``.  Now we can see that ``noah`` is both her father
-and grandfather.
+relation between ``katherine`` and ``noah``.  Now we can see that
+``noah`` is both her father and grandfather (ick!).
 
 Exploring the relationships pointing to ``katherine`` from ``evelyn``
 yields a pretty crazy picture, even when we restrict ourselves to
 paths of at most 2 relationships (we need to play some tricks to
-ensure a stable sort order)::
+ensure that the results are returned in a repeatable order, so that
+this test passes)::
 
     >>> relations = container.findRelationships(target=app['katherine'],
     ...                                         maxDepth=2)
