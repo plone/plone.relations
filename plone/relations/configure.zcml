@@ -1,0 +1,19 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:five="http://namespaces.zope.org/five">
+
+  <include package="five.intid"/>
+
+  <adapter factory=".relationships.ComplexRelationshipAdapter"/>
+
+  <class class=".relationships.Z2Relationship">
+    <require permission="zope2.View"
+             interface=".interfaces.IComplexRelationship" />
+  </class>
+
+  <class class=".container.Z2RelationshipContainer">
+    <require permission="zope2.ViewManagementScreens"
+             interface=".interfaces.IComplexRelationshipContainer" />
+  </class>
+
+</configure>

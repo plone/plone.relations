@@ -1,0 +1,13 @@
+README.txt
+setup.cfg
+setup.py
+plone/__init__.py
+plone.relations.egg-info/PKG-INFO
+plone.relations.egg-info/SOURCES.txt
+plone.relations.egg-info/dependency_links.txt
+plone.relations.egg-info/entry_points.txt
+plone.relations.egg-info/namespace_packages.txt
+plone.relations.egg-info/not-zip-safe
+plone.relations.egg-info/top_level.txt
+plone/relations/__init__.py
+plone/relations/tests.py

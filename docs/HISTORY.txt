@@ -1,0 +1,9 @@
+Changelog for plone.relations
+
+    (name of developer listed in brackets)
+
+plone.relations - 0.1 Unreleased
+
+    - Initial package structure.
+      [zopeskel]
+
