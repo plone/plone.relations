@@ -84,8 +84,8 @@ relationship container to use::
 
     >>> import transaction
     >>> from plone.relations import interfaces
-    >>> from plone.relations.container import RelationshipContainer
-    >>> container = RelationshipContainer()
+    >>> from plone.relations.container import Z2RelationshipContainer
+    >>> container = Z2RelationshipContainer()
     >>> from zope.interface.verify import verifyObject
     >>> verifyObject(interfaces.IComplexRelationshipContainer, container)
     True
@@ -105,7 +105,7 @@ contexts from the 1974 film _Chinatown_::
 
     >>> from plone.relations.tests import ChinatownSetUp
     >>> ChinatownSetUp(app) #creates our characters and contexts
-    >>> from plone.relations.relationships import Relationship
+    >>> from plone.relations.relationships import Z2Relationship as Relationship
     >>> rel1 = Relationship((app['noah'],), (app['evelyn'],), relation='parent')
     >>> verifyObject(interfaces.IRelationship, rel1)
     True
@@ -451,3 +451,97 @@ cycles between ``evelyn`` and herself:
     ...                                  target=app['evelyn'], maxDepth=2))
     [cycle(<Relationship 'client' from (<Demo evelyn>,) to (<Demo jake>,)>, <Relationship 'intimate' from (<Demo jake>,) to (<Demo evelyn>,)>)]
 
+
+Acquisition Nonsense
+=====================
+
+Zope 2 requires almost every object to support acquisition in order to
+function (it is required for security and traversal).  Below we will perform
+some sanity checks to ensure that the objects involved are wrapped in ways
+that meet Zope 2's expectations:
+
+
+    >>> list(container.findSources(target=app['katherine']))[0].aq_chain
+    [<Demo evelyn>, <Application at >]
+    >>> list(container.findTargets(source=app['hollis'],
+    ...                            relation='business-partner'))[0].aq_chain
+    [<Demo noah>, <Application at >]
+    >>> list(container.findRelationships(source=app['evelyn'],
+    ...                          target=app['katherine']))[0][0].aq_chain
+    [<Relationship 'sibling' from (<Demo evelyn>,) to (<Demo katherine>,)>, <plone.relations.container.Z2RelationshipContainer object at ...>, <Application at >]
+    >>> list(container.findRelationships(source=app['evelyn'],
+    ...                      target=app['katherine']))[0][0].targets[0].aq_chain
+    [<Demo katherine>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
+    >>> list(container.findRelationships(source=app['evelyn'],
+    ...                      target=app['katherine']))[0][0].sources[0].aq_chain
+    [<Demo evelyn>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
+
+As you can see, even as returned from the search the targets and
+sources have their original wrapping, the relationships are wrapped by
+their container (this is important if the relationships need to
+interact with the security machinery), and the ``sources`` and
+``targets`` attributes of a returned relationship appear to have their
+original wrapping as well.  However, on storage and retrieval, the wrapping
+of the ``sources`` and ``targets`` will be lost, and one cannot depend
+on using those objects directly.  Let's see exactly what happens to the
+wrappers when we store and retrieve these things::
+
+    >>> evelyn = list(container.findSources(target=app['katherine']))[0]
+    >>> noah = list(container.findTargets(source=app['hollis'],
+    ...                                   relation='business-partner'))[0]
+    >>> rel = list(container.findRelationships(source=app['evelyn'],
+    ...                          target=app['katherine']))[0][0]
+    >>> sp = transaction.savepoint()
+    >>> evelyn._p_deactivate()
+    >>> noah._p_deactivate()
+    >>> rel._p_deactivate()
+    >>> from Acquisition import aq_chain
+    >>> rel.targets[0].aq_chain
+    Traceback (most recent call last):
+    ...
+    AttributeError: aq_chain
+    >>> list(container.findSources(target=app['katherine']))[0].aq_chain
+    [<Demo evelyn>, <Application at >]
+    >>> list(container.findTargets(source=app['hollis'],
+    ...                            relation='business-partner'))[0].aq_chain
+    [<Demo noah>, <Application at >]
+    >>> list(container.findRelationships(source=app['evelyn'],
+    ...                          target=app['katherine']))[0][0].aq_chain
+    [<Relationship 'sibling' from (<Demo evelyn>,) to (<Demo katherine>,)>, <plone.relations.container.Z2RelationshipContainer object at ...>, <Application at >]
+    >>> list(container.findRelationships(source=app['evelyn'],
+    ...                      target=app['katherine']))[0][0].targets[0].aq_chain
+    Traceback (most recent call last):
+    ...
+    AttributeError: aq_chain
+
+All of the wrappers are preserved except those on the ``sources`` and
+``targets``, which for this reason mostly shouldn't be directly
+depended on (at least not from code that requires security checks or
+acquisition).
+
+What happens when we create a relationship to an explicitly rewrapped object::
+
+    >>> rel = Relationship((app['katherine'],),(app['jake'].__of__(container),))
+    >>> container.add(rel)
+    >>> rel.targets[0].aq_chain
+    [<Demo jake>, <plone.relations.container.Z2RelationshipContainer object at ...>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
+    >>> list(container.findTargets(source=app['katherine'],
+    ...                            relation=None))[0].aq_chain
+    [<Demo jake>, <Application at >]
+
+The retrieval via search returns the object only wrapped by its
+original containment, regardless of how it was wrapped when used in
+the relationship.  When we retrieve the relationship, all the wrapping
+will again have been removed from the ``sources`` and ``targets``.
+
+    >>> sp = transaction.savepoint()
+    >>> rel._p_deactivate()
+    >>> list(container.findRelationships(source=app['katherine'],
+    ...                                relation=None))[0][0].targets[0].aq_chain
+    Traceback (most recent call last):
+    ...
+    AttributeError: aq_chain
+
+We may want to consider rewrapping the targets and sources on the
+relationship object, to make them directly useful.  It's not clear whether
+there's much to gain by doing so though.

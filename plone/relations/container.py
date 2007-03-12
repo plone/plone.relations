@@ -232,3 +232,21 @@ class Z2RelationshipContainer(RelationshipContainer, Explicit):
 
     def manage_fixupOwnershipAfterAdd(self):
         pass
+
+    def __getitem__(self, key):
+        # acquisition wrap the output
+        val = super(Z2RelationshipContainer, self).__getitem__(key)
+        if hasattr(val, '__of__'):
+            val = val.__of__(self)
+        return val
+
+    def get(self, key, default=None):
+        # acquisition wrap the output
+        val = super(Z2RelationshipContainer, self).get(key, default)
+        if hasattr(val, '__of__'):
+            val = val.__of__(self)
+        return val
+
+    def reindex(self, object):
+        assert object.__parent__.aq_base is self.aq_base
+        self.relationIndex.index(object)

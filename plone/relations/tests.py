@@ -71,7 +71,7 @@ def test_suite():
                                              package='plone.relations',
                                              setUp=setUp)
     readme = ztc.FunctionalDocFileSuite('README.txt',
-                                        #optionflags=optionflags,
+                                        optionflags=optionflags,
                                         package='plone.relations',
                                         setUp=setUp)
     integration.layer = readme.layer = FuncLayer
