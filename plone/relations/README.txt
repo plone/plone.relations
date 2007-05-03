@@ -71,7 +71,7 @@ Using This Package
 -----------------------
 
 The basic functionality provided by this package is demonstrated and
-tested in ``container.txt``, which essentiallly duplicates the
+tested in ``container.txt``, which essentially duplicates the
 container tests from ``zc.relationship`` in a Zope 2 environment.
 This section demonstrates some basic usage, as well as the features
 provided by additional interfaces described above.

@@ -1,5 +1,5 @@
 import random
-from Acquisition import Explicit, aq_parent, aq_inner
+from Acquisition import Explicit, aq_parent, aq_inner, aq_base
 from BTrees import OIBTree
 import zope.app.container.btree
 from zope.interface import implements
@@ -215,7 +215,7 @@ class RelationshipContainer(Container):
     # a bit of a kludge because the Five version of intid needs this
     def getPhysicalPath(self):
         path = (str(self.__name__),)
-        p = self.__parent__ or aq_parent(aq_inner(self))
+        p =  aq_parent(aq_inner(self)) or self.__parent__
         if p is not None:
             path = p.getPhysicalPath() + path
         return path
@@ -248,5 +248,12 @@ class Z2RelationshipContainer(RelationshipContainer, Explicit):
         return val
 
     def reindex(self, object):
-        assert object.__parent__.aq_base is self.aq_base
+        assert aq_base(object.__parent__) is aq_base(self)
         self.relationIndex.index(object)
+
+    def remove(self, object):
+        key = object.__name__
+        if aq_base(self[key]) is not aq_base(object):
+            raise ValueError("Relationship is not stored as its __name__")
+        self.relationIndex.unindex(object)
+        super(AbstractContainer, self).__delitem__(key)

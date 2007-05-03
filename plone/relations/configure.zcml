@@ -8,7 +8,7 @@
 
   <class class=".relationships.Z2Relationship">
     <require permission="zope2.View"
-             interface=".interfaces.IComplexRelationship" />
+             interface=".interfaces.IRelationship" />
   </class>
 
   <class class=".container.Z2RelationshipContainer">

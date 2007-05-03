@@ -29,7 +29,7 @@ class Relationship(RelationshipBase):
     # a bit of a kludge because the Five version of intid needs this
     def getPhysicalPath(self):
         path = (str(self.__name__),)
-        p = self.__parent__ or aq_parent(aq_inner(self))
+        p = aq_parent(aq_inner(self)) or self.__parent__
         if p is not None:
             path = p.getPhysicalPath() + path
         return path
