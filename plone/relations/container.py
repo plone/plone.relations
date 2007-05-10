@@ -3,6 +3,8 @@ from Acquisition import Explicit, aq_parent, aq_inner, aq_base
 from BTrees import OIBTree
 import zope.app.container.btree
 from zope.interface import implements
+from zope.event import notify
+from zope.app.container.contained import ObjectRemovedEvent
 from zc.relationship import index
 from zc.relationship.interfaces import ICircularRelationshipPath
 from zc.relationship.shared import ResolvingFilter
@@ -256,4 +258,7 @@ class Z2RelationshipContainer(RelationshipContainer, Explicit):
         if aq_base(self[key]) is not aq_base(object):
             raise ValueError("Relationship is not stored as its __name__")
         self.relationIndex.unindex(object)
+        # we need to manually send the ObjectRemovedEvent, because acquisition
+        # wrapping prevents it from firing automatically.
+        notify(ObjectRemovedEvent(object, self, key))
         super(AbstractContainer, self).__delitem__(key)
