@@ -165,14 +165,12 @@ class LazyList(object):
             thelist = [i for i in self] # invokes __iter__ which sets _list
         else:
             num_iters = end - self._pos
-            i = 0
             # continue where we left off
             if self._list is None:
                 self._list = []
-            for item in self._iter:
+            for i, item in enumerate(self._iter):
                 self._list.append(item)
-                i += 1
-                if i >= num_iters:
+                if i+1 >= num_iters:
                     self._pos = end
                     break
             else:

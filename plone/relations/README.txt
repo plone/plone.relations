@@ -391,7 +391,7 @@ loops to draw understandably using ascii art. However, it's no trouble
 for our relationship container to inspect it::
 
     >>> list(container.findSources(target=app['katherine'], relation='parent', maxDepth=None))
-    [<Demo noah>, <Demo evelyn>]
+    [<Demo evelyn>, <Demo noah>]
     >>> list(container.findRelationships(source=app['noah'],
     ...                                  target=app['katherine'],
     ...                                  relation='parent', maxDepth=None))
