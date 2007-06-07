@@ -1,6 +1,7 @@
 import unittest
 
 from zope.testing import doctest
+from zope.testing.doctestunit import DocTestSuite
 from zope.component import testing
 from Testing import ZopeTestCase as ztc
 from collective.testing.layer import ZCMLLayer
@@ -76,7 +77,9 @@ def test_suite():
                                         setUp=setUp)
     integration.layer = readme.layer = FuncLayer
 
-    return unittest.TestSuite((integration, readme))
+    lazy = DocTestSuite('plone.relations.lazylist')
+
+    return unittest.TestSuite((integration, readme, lazy))
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')
