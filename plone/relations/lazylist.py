@@ -128,7 +128,6 @@ class LazyList(object):
 
     """
     __allow_access_to_unprotected_subobjects__ = True
-    _pos = -1 # We do not yet have a position
     _finished = False
     _list = None
 
@@ -139,7 +138,14 @@ class LazyList(object):
             # skip extra processing when we get a list or tuple
             self._list = list(initlist)
             self._finished = True
-            self._pos = len(self._list)
+
+    @property
+    def _pos(self):
+        try:
+            return len(self._list) - 1
+        except TypeError:
+            # the list isn't initialized
+            return -1
 
     def __iter__(self):
         # iterate over our internal list first
@@ -151,7 +157,6 @@ class LazyList(object):
         if not self._finished:
             for item in self._iter:
                 self._list.append(item)
-                self._pos += 1
                 yield item
             else:
                 # We completed the final iteration
@@ -171,7 +176,6 @@ class LazyList(object):
             for i, item in enumerate(self._iter):
                 self._list.append(item)
                 if i+1 >= num_iters:
-                    self._pos = end
                     break
             else:
                 self._finished = True
