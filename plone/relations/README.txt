@@ -469,22 +469,19 @@ that meet Zope 2's expectations:
     >>> list(container.findRelationships(source=app['evelyn'],
     ...                          target=app['katherine']))[0][0].aq_chain
     [<Relationship 'sibling' from (<Demo evelyn>,) to (<Demo katherine>,)>, <plone.relations.container.Z2RelationshipContainer object at ...>, <Application at >]
-    >>> list(container.findRelationships(source=app['evelyn'],
-    ...                      target=app['katherine']))[0][0].targets[0].aq_chain
-    [<Demo katherine>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
-    >>> list(container.findRelationships(source=app['evelyn'],
-    ...                      target=app['katherine']))[0][0].sources[0].aq_chain
-    [<Demo evelyn>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
+    >>> list(list(container.findRelationships(source=app['evelyn'],
+    ...                      target=app['katherine']))[0][0].targets)[0].aq_chain
+    [<Demo katherine>, <Application at >]
+    >>> list(list(container.findRelationships(source=app['evelyn'],
+    ...                      target=app['katherine']))[0][0].sources)[0].aq_chain
+    [<Demo evelyn>, <Application at >]
 
 As you can see, even as returned from the search the targets and
 sources have their original wrapping, the relationships are wrapped by
 their container (this is important if the relationships need to
-interact with the security machinery), and the ``sources`` and
-``targets`` attributes of a returned relationship appear to have their
-original wrapping as well.  However, on storage and retrieval, the wrapping
-of the ``sources`` and ``targets`` will be lost, and one cannot depend
-on using those objects directly.  Let's see exactly what happens to the
-wrappers when we store and retrieve these things::
+interact with the security machinery).  The ``sources`` and
+``targets`` attributes of a returned relationship will to have their
+original wrapping as well, even after ghosting::
 
     >>> evelyn = list(container.findSources(target=app['katherine']))[0]
     >>> noah = list(container.findTargets(source=app['hollis'],
@@ -494,12 +491,13 @@ wrappers when we store and retrieve these things::
     >>> sp = transaction.savepoint()
     >>> evelyn._p_deactivate()
     >>> noah._p_deactivate()
-    >>> rel._p_deactivate()
-    >>> from Acquisition import aq_chain
-    >>> rel.targets[0].aq_chain
-    Traceback (most recent call last):
-    ...
-    AttributeError: aq_chain
+    >>> for _rel in container.values():
+    ...    _rel._p_deactivate()
+    ...    _rel.targets._p_deactivate()
+    ...    _rel.sources._p_deactivate()
+    >>> container._p_deactivate()
+    >>> list(rel.targets)[0].aq_chain
+    [<Demo katherine>, <Application at >]
     >>> list(container.findSources(target=app['katherine']))[0].aq_chain
     [<Demo evelyn>, <Application at >]
     >>> list(container.findTargets(source=app['hollis'],
@@ -508,11 +506,9 @@ wrappers when we store and retrieve these things::
     >>> list(container.findRelationships(source=app['evelyn'],
     ...                          target=app['katherine']))[0][0].aq_chain
     [<Relationship 'sibling' from (<Demo evelyn>,) to (<Demo katherine>,)>, <plone.relations.container.Z2RelationshipContainer object at ...>, <Application at >]
-    >>> list(container.findRelationships(source=app['evelyn'],
-    ...                      target=app['katherine']))[0][0].targets[0].aq_chain
-    Traceback (most recent call last):
-    ...
-    AttributeError: aq_chain
+    >>> list(list(container.findRelationships(source=app['evelyn'],
+    ...                      target=app['katherine']))[0][0].targets)[0].aq_chain
+    [<Demo katherine>, <Application at >]
 
 All of the wrappers are preserved except those on the ``sources`` and
 ``targets``, which for this reason mostly shouldn't be directly
@@ -523,24 +519,24 @@ What happens when we create a relationship to an explicitly rewrapped object::
 
     >>> rel = Relationship((app['katherine'],),(app['jake'].__of__(container),))
     >>> container.add(rel)
-    >>> rel.targets[0].aq_chain
-    [<Demo jake>, <plone.relations.container.Z2RelationshipContainer object at ...>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
+    >>> list(rel.targets)[0].aq_chain
+    [<Demo jake>, <Application at >]
     >>> list(container.findTargets(source=app['katherine'],
     ...                            relation=None))[0].aq_chain
     [<Demo jake>, <Application at >]
 
 The retrieval via search returns the object only wrapped by its
 original containment, regardless of how it was wrapped when used in
-the relationship.  When we retrieve the relationship, all the wrapping
-will again have been removed from the ``sources`` and ``targets``.
+the relationship.  When we retrieve the relationship, the original wrapping
+of ``sources`` and ``targets`` will be restored.
 
     >>> sp = transaction.savepoint()
     >>> rel._p_deactivate()
-    >>> list(container.findRelationships(source=app['katherine'],
-    ...                                relation=None))[0][0].targets[0].aq_chain
-    Traceback (most recent call last):
-    ...
-    AttributeError: aq_chain
+    >>> rel.sources._p_deactivate()
+    >>> rel.targets._p_deactivate()
+    >>> list(list(container.findRelationships(source=app['katherine'],
+    ...                                relation=None))[0][0].targets)[0].aq_chain
+    [<Demo jake>, <Application at >]
 
 We may want to consider rewrapping the targets and sources on the
 relationship object, to make them directly useful.  It's not clear whether

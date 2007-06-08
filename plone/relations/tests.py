@@ -64,7 +64,7 @@ class FuncLayer(ZCMLLayer):
         from plone import relations
         zcml.load_config('configure.zcml', relations)
 
-optionflags = doctest.REPORT_ONLY_FIRST_FAILURE | doctest.ELLIPSIS
+optionflags = doctest.ELLIPSIS
 def test_suite():
     # Zope 2 + Five Integration tests that use ZopeTestCase
     integration = ztc.FunctionalDocFileSuite('container.txt',

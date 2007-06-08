@@ -508,9 +508,9 @@ to make the cycle.
     >>> sorted(repr(o) for o in res[1:3])
     ['<Demo ob0>', '<Demo ob5>']
     >>> rel = list(container.findRelationships(app['ob5'], app['ob1']))[0][0]
-    >>> rel.sources
+    >>> tuple(rel.sources)
     (<Demo ob5>,)
-    >>> rel.targets
+    >>> tuple(rel.targets)
     (<Demo ob1>,)
     >>> container.remove(rel)
     >>> list(container.findRelationships(app['ob5'], app['ob1']))
@@ -553,12 +553,12 @@ We'll switch out ob3 and ob4, so the diagram looks like this. ::
 
     >>> rel = iter(container.findRelationships(
     ...     app['ob1'], app['ob3'])).next()[0]
-    >>> rel.targets
+    >>> tuple(rel.targets)
     (<Demo ob3>,)
 
     >>> rel.targets = [app['ob4']] # this calls reindex
 
-    >>> rel.targets
+    >>> tuple(rel.targets)
     (<Demo ob4>,)
 
     >>> sorted(ob.id for ob in container.findTargets(app['ob1']))
@@ -579,10 +579,10 @@ diagram to look like this. ::
       | \ |
     ob5  ob4
 
-    >>> rel.sources
+    >>> tuple(rel.sources)
     (<Demo ob1>,)
     >>> rel.sources = (app['ob2'],) # this calls reindex
-    >>> rel.sources
+    >>> tuple(rel.sources)
     (<Demo ob2>,)
 
     >>> sorted(ob.id for ob in container.findTargets(app['ob1']))

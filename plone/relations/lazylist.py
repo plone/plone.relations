@@ -311,7 +311,7 @@ class LazyResolvingList(object):
         return self._util_method(token)
 
     def __len__(self):
-        """This unspools the whole list"""
+        """This unspools the whole list""" 
         return len(self._data)
 
     def __iter__(self):
@@ -328,8 +328,8 @@ class LazyResolvingList(object):
 
     def __add__(self, other):
         """Dumb add method that assumes identical resolvers"""
-        assert self._resolver is getattr(other, '_resolver', None), \
-               "Both items must use the same resolver method"
+        assert self._resolver == getattr(other, '_resolver', None), \
+                   "Both items must use the same resolver method"
         return self.__class__(self._data + other._data, self._resolver)
 
     def keys(self):
