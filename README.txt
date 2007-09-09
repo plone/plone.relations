@@ -9,6 +9,9 @@ product builds on and requires zc.relationship available in the zope.org svn,
 and also five.intid available in the Plone collective.  The tests require
 some helpers from collective.testing to run.
 
+See plone/relations/README.txt for complete documentation.
+
+
 Credits
 -------
 
