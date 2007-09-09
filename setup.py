@@ -1,14 +1,11 @@
 from setuptools import setup, find_packages
-import sys, os
 
 version = '0.1'
 
 setup(name='plone.relations',
       version=version,
       description="Tools for defining and querying complex relationships between objects",
-      long_description="""\
-""",
-      # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers
+      long_description=open("plone/relations/README.txt").read(),
       classifiers=[
         "Framework :: Zope2",
         "Framework :: Zope3",
