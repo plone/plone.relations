@@ -1,13 +1,13 @@
-Overview
---------
+Introduction
+------------
 
 Tools for defining and querying complex relationships between objects.  This
 product builds on and requires zc.relationship available in the zope.org svn, 
 and also five.intid available in the Plone collective.  The tests require
 some helpers from collective.testing to run.
 
-Documentation
--------------
+Overview
+--------
 
 This is a product built on the ``zc.relationship`` product for Zope 3.
 It attempts to allow the functionality of that package to be used from
@@ -19,45 +19,45 @@ The relationship container provided here is very similar to the one in
 implementing or adaptable to the simple IRelationship interface, but
 more complex relationships are supported as well.  This extra
 functionality is defined in a few extensions to the IRelationship
-interface.  These interfaces are described below::
+interface.  These interfaces are described below:
 
-            IRelationship defines a basic relationship consisting of
-            only ``sources`` and ``targets``.  These are sequences of
-            objects that comprise the relationship.  In the default
-            implementation these must all be persistent objects from
-            the ZODB (or more generally, objects for which and
-            ``intid`` can be generated using the available ``IIntId``
-            utility (cf ``zope.app.intid`` and ``five.intid``)).
+    IRelationship defines a basic relationship consisting of
+    only ``sources`` and ``targets``.  These are sequences of
+    objects that comprise the relationship.  In the default
+    implementation these must all be persistent objects from
+    the ZODB (or more generally, objects for which and
+    ``intid`` can be generated using the available ``IIntId``
+    utility (cf ``zope.app.intid`` and ``five.intid``)).
 
-            IComplexRelationship adds a relationship predicate to
-            indicate the type of relationship involved.  This
-            predicate is retrieved from an attribute called
-            ``relation`` which should be an immutable unicode string
-            (so a zope.i18n.Message can be used) in the default
-            implementation.
+    IComplexRelationship adds a relationship predicate to
+    indicate the type of relationship involved.  This
+    predicate is retrieved from an attribute called
+    ``relation`` which should be an immutable unicode string
+    (so a zope.i18n.Message can be used) in the default
+    implementation.
 
-            IContextAwareRelationship adds a context in which the
-            relationship applies.  This context is provided by a
-            method called ``getContext`` which, in the default
-            implementation, should return objects of the same sort
-            required by IRelationship (e.g. persistent objects from
-            the ZODB).  An example: a hierarchical relationship which
-            exists only within the _context_ of a specific department
-            or project.
+    IContextAwareRelationship adds a context in which the
+    relationship applies.  This context is provided by a
+    method called ``getContext`` which, in the default
+    implementation, should return objects of the same sort
+    required by IRelationship (e.g. persistent objects from
+    the ZODB).  An example: a hierarchical relationship which
+    exists only within the _context_ of a specific department
+    or project.
 
-            IStatefulRelationship adds a relationship state to
-            indicate the status of a particular relationship in the
-            case that the relationship is one which changes over time
-            or as a result of user actions.  This state is retrieved
-            from an attribute called ``state`` which should be an
-            immutable unicode string (see above). For example: a
-            relationship which requires explicit approval by the
-            involved target objects, it would start in an unapproved
-            ``state`` and then transition to approved when the target
-            objects had signaled their approval.  Also, the ``state``
-            may represent a different stages of a particular
-            relationship, e.g. ``stranger``, ``acquaintance``,
-            ``pal``, ``friend``, ``BFF``.
+    IStatefulRelationship adds a relationship state to
+    indicate the status of a particular relationship in the
+    case that the relationship is one which changes over time
+    or as a result of user actions.  This state is retrieved
+    from an attribute called ``state`` which should be an
+    immutable unicode string (see above). For example: a
+    relationship which requires explicit approval by the
+    involved target objects, it would start in an unapproved
+    ``state`` and then transition to approved when the target
+    objects had signaled their approval.  Also, the ``state``
+    may represent a different stages of a particular
+    relationship, e.g. ``stranger``, ``acquaintance``,
+    ``pal``, ``friend``, ``BFF``.
 
 
 These additional interfaces are entirely optional and may will be
@@ -87,7 +87,7 @@ First you need a site with some content and by default an ``IIntId``
 utility.  This was created for us by the test setup which has provided
 us with an ``app`` an ``IIntId`` utility provided by the
 ``five.intid`` package.  Additionally, we need to create a
-relationship container to use::
+relationship container to use:
 
     >>> import transaction
     >>> from plone.relations import interfaces
@@ -108,7 +108,7 @@ directly.  Now we make some relationships, using the provided
 ``Relationship`` class which implements ``IRelationship`` and has a
 built-in adapter to IComplexRelationship.  To properly illustrate the
 potential complexity of relationships we will use some characters and
-contexts from the 1974 film _Chinatown_::
+contexts from the 1974 film _Chinatown_:
 
     >>> from plone.relations.tests import ChinatownSetUp
     >>> ChinatownSetUp(app) #creates our characters and contexts
@@ -128,7 +128,7 @@ relationship.
 
 Then we add a relationship with a state, by directly applying the
 interface and adding the attribute (which is not such a great way to
-do this)::
+do this):
 
     >>> rel3 = Relationship((app['hollis'],), (app['evelyn'],), relation='intimate')
     >>> rel3.state = 'married'
@@ -145,7 +145,7 @@ We currently have a simple tree::
    evelyn <-(intimate:married)- hollis
 
 Now we can make queries against this simple data set, like finding
-objects for which a another object is the source or target::
+objects for which a another object is the source or target:
 
     >>> list(container.findTargets(source=app['hollis']))
     [<Demo noah>, <Demo evelyn>]
@@ -175,7 +175,7 @@ transitively at chains of relationships by specifying a maxDepth (and
 optionally a minDepth) for any of the queries.  In particular the
 findRelationships method will seek out chains of relationship matching
 the specified parameters.  Let's look at the ways that ``hollis`` and
-``evelyn`` are connected::
+``evelyn`` are connected:
 
     >>> list(container.findRelationships(source=app['hollis'],
     ...                                  target=app['evelyn'], maxDepth=2))
@@ -193,7 +193,7 @@ this case ``hollis`` has been _murdered_; so ``evelyn`` is now his
 widow. We express this with a state change on the relationship, note that
 we have to reindex the relationship after applying the state directly
 to it, if we had used an adapter to provide the state, then it should
-have taken care of this for us when the attribute was set.::
+have taken care of this for us when the attribute was set.:
 
     >>> relations = container.findRelationships(target=app['evelyn'], relation='intimate')
     >>> relations = list(relations)
@@ -205,7 +205,7 @@ have taken care of this for us when the attribute was set.::
     ...                             # we'll see later with context
 
 We have changed the state of the marriage, let's ensure we can still
-find it the same way we did before, but also using out new state::
+find it the same way we did before, but also using out new state:
 
     >>> list(container.findTargets(source=app['hollis'], relation='intimate'))
     [<Demo evelyn>]
@@ -215,7 +215,7 @@ find it the same way we did before, but also using out new state::
     []
 
 Now let's add some more relationships, including one with an unknown
-``relation``::
+``relation``. Here is the new relation tree::
 
             noah <----(business-partner)---
              | (parent)                    |
@@ -225,6 +225,8 @@ Now let's add some more relationships, including one with an unknown
     (client)/  \ (??)
            v    v
         jake    katherine
+
+and the associated code:
 
     >>> rel4 = Relationship((app['evelyn'],), (app['jake'],), relation='client')
     >>> rel5 = Relationship((app['evelyn'],), (app['katherine'],))
@@ -249,7 +251,7 @@ Finding if Objects Are Related
 We can use maxDepth, like we did with the ``findRelationship``
 queries, for any other query methods. A particularly useful one is
 ``isLinked``, which determines if any matching relationship chains
-exist for a given query::
+exist for a given query:
 
     >>> sorted([repr(r) for r in container.findTargets(source=app['noah'],
     ...                                                maxDepth=2)])
@@ -292,7 +294,7 @@ contexts for a client relationship.  In this case ``jake`` is a
 private investigator and the context is the ``investigation`` of
 ``hollis'`` murder.  This ``investigation`` object could consist of
 notes pertaining to the investigation or other relevant data.  We
-apply it to the relationship as a context::
+apply it to the relationship as a context:
 
     >>> list(container.findSources(target=app['jake'], relation='client',
     ...                            context=app['investigation']))
@@ -315,7 +317,7 @@ apply it to the relationship as a context::
 
 In time some additional relationships develop. ``Jake`` and ``katherine``
 have a fling during the investigation.  Also, ``jake`` becomes suspicious
-of ``hollis'`` business partner and father-in-law ``noah``::
+of ``hollis'`` business partner and father-in-law ``noah``:
 
     >>> rel6 = Relationship((app['jake'],), (app['evelyn'],), 'intimate')
     >>> rel6.state = 'fling'
@@ -330,7 +332,7 @@ Multiple Relationship Chains and Cycles
 ---------------------------------------
 
 We've got a fairly complex graph, but an existing relationship becomes
-a little clearer, when we learn katherine is evelyn's sister::
+a little clearer, when we learn katherine is evelyn's sister:
 
     >>> murky = list(container.findRelationships(source=app['evelyn'],
     ...                                          target=app['katherine']))
@@ -351,7 +353,7 @@ Here's the current relationship tree in ASCII form::
                     jake       katherine
 
 This complexity will allow us to explore how the relationship query
-mechanisms resolve multiple relationship paths::
+mechanisms resolve multiple relationship paths:
 
     >>> list(container.findTargets(source=app['jake'], context=app['investigation']))
     [<Demo evelyn>, <Demo noah>]
@@ -381,6 +383,7 @@ sources for their parental relationship with ``katherine``)::
        |
      hollis
 
+and the code:
 
     >>> rel8 = Relationship((app['noah'],), (app['evelyn'],), 'intimate')
     >>> interfaces.IContextAwareRelationship(rel8).setContext(app['the past'])
@@ -395,7 +398,7 @@ sources for their parental relationship with ``katherine``)::
 
 At this point the relationship tree is far too complex and full of
 loops to draw understandably using ascii art. However, it's no trouble
-for our relationship container to inspect it::
+for our relationship container to inspect it:
 
     >>> list(container.findSources(target=app['katherine'], relation='parent', maxDepth=None))
     [<Demo evelyn>, <Demo noah>]
@@ -412,7 +415,7 @@ Exploring the relationships pointing to ``katherine`` from ``evelyn``
 yields a pretty crazy picture, even when we restrict ourselves to
 paths of at most 2 relationships (we need to play some tricks to
 ensure that the results are returned in a repeatable order, so that
-this test passes)::
+this test passes):
 
     >>> relations = container.findRelationships(target=app['katherine'],
     ...                                         maxDepth=2)
@@ -467,7 +470,6 @@ function (it is required for security and traversal).  Below we will perform
 some sanity checks to ensure that the objects involved are wrapped in ways
 that meet Zope 2's expectations:
 
-
     >>> list(container.findSources(target=app['katherine']))[0].aq_chain
     [<Demo evelyn>, <Application at >]
     >>> list(container.findTargets(source=app['hollis'],
@@ -488,7 +490,7 @@ sources have their original wrapping, the relationships are wrapped by
 their container (this is important if the relationships need to
 interact with the security machinery).  The ``sources`` and
 ``targets`` attributes of a returned relationship will to have their
-original wrapping as well, even after ghosting::
+original wrapping as well, even after ghosting:
 
     >>> evelyn = list(container.findSources(target=app['katherine']))[0]
     >>> noah = list(container.findTargets(source=app['hollis'],
@@ -522,7 +524,7 @@ All of the wrappers are preserved except those on the ``sources`` and
 depended on (at least not from code that requires security checks or
 acquisition).
 
-What happens when we create a relationship to an explicitly rewrapped object::
+What happens when we create a relationship to an explicitly rewrapped object:
 
     >>> rel = Relationship((app['katherine'],),(app['jake'].__of__(container),))
     >>> container.add(rel)
