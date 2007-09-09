@@ -1,6 +1,13 @@
-========================
-plone.relations
-========================
+Overview
+--------
+
+Tools for defining and querying complex relationships between objects.  This
+product builds on and requires zc.relationship available in the zope.org svn, 
+and also five.intid available in the Plone collective.  The tests require
+some helpers from collective.testing to run.
+
+Documentation
+-------------
 
 This is a product built on the ``zc.relationship`` product for Zope 3.
 It attempts to allow the functionality of that package to be used from
@@ -68,7 +75,7 @@ requirements.
 
 
 Using This Package
------------------------
+------------------
 
 The basic functionality provided by this package is demonstrated and
 tested in ``container.txt``, which essentially duplicates the
@@ -130,7 +137,7 @@ do this)::
     >>> alsoProvides(rel3, IStatefulRelationship)
     >>> container.add(rel3)
 
-We currently have a simple tree:
+We currently have a simple tree::
 
     noah <---(business-partner)---
      | (parent)                   |
@@ -161,7 +168,7 @@ objects for which a another object is the source or target::
 
 
 Transitivity
--------------
+------------
 
 We can also generate a list of relationships, and even look
 transitively at chains of relationships by specifying a maxDepth (and
@@ -178,7 +185,7 @@ the specified parameters.  Let's look at the ways that ``hollis`` and
 
 
 Modifying Relationships
-------------------------
+-----------------------
 
 The above method also allows us to access existing relationships
 directly, which is especially helpful when we want to alter them.  In
@@ -210,14 +217,14 @@ find it the same way we did before, but also using out new state::
 Now let's add some more relationships, including one with an unknown
 ``relation``::
 
-        noah <----(business-partner)---
-         | (parent)                    |
-         v                             |
-       evelyn <-(intimate:widowed)- hollis
-         /\
-(client)/  \ (??)
-       v    v
-    jake    katherine
+            noah <----(business-partner)---
+             | (parent)                    |
+             v                             |
+           evelyn <-(intimate:widowed)- hollis
+             /\
+    (client)/  \ (??)
+           v    v
+        jake    katherine
 
     >>> rel4 = Relationship((app['evelyn'],), (app['jake'],), relation='client')
     >>> rel5 = Relationship((app['evelyn'],), (app['katherine'],))
@@ -330,18 +337,18 @@ a little clearer, when we learn katherine is evelyn's sister::
     >>> evelyn_katherine = murky[0][0]
     >>> interfaces.IComplexRelationship(evelyn_katherine).relation = 'sibling'
 
-Here's the current relationship tree in ASCII form:
+Here's the current relationship tree in ASCII form::
 
-        (nemesis)---->noah <-----(business-partner)--
- [investigation]|      | (parent)                    |
-                |      v                             |
-(intimate:fling)|--> evelyn <-(intimate:widowed)- hollis
-[investigation] |      /\
-                |(client)\
-           [investigation]\ (sibling)
-                |   /      \
-                |  v        v
-                jake       katherine
+            (nemesis)---->noah <-----(business-partner)--
+     [investigation]|      | (parent)                    |
+                    |      v                             |
+    (intimate:fling)|--> evelyn <-(intimate:widowed)- hollis
+    [investigation] |      /\
+                    |(client)\
+               [investigation]\ (sibling)
+                    |   /      \
+                    |  v        v
+                    jake       katherine
 
 This complexity will allow us to explore how the relationship query
 mechanisms resolve multiple relationship paths::
@@ -428,18 +435,18 @@ this test passes)::
 
 The relationships are as follows:
 
-  evelyn |-(sibling)-> katherine
-  evelyn+noah |-(parent)-> katherine
-  noah |-(parent)-> evelyn |-(sibling)-> katherine
-  jake |-(intimate)-> evelyn |-(sibling)-> katherine
-  noah |-(intimate)-> evelyn |-(sibling)-> katherine
-  hollis |-(intimate)-> evelyn |-(sibling)-> katherine
-  jake |-(nemesis)-> noah |-(parent)-> katherine
-  noah |-(parent)-> evelyn |-(parent)-> katherine
-  jake |-(intimate)-> evelyn |-(parent)-> katherine
-  noah |-(intimate)-> evelyn |-(parent)-> katherine
-  hollis |-(intimate)-> evelyn |-(parent)-> katherine
-  hollis |-(business-partner)-> noah |-(parent)-> katherine
+  evelyn \|-(sibling)-> katherine
+  evelyn+noah \|-(parent)-> katherine
+  noah \|-(parent)-> evelyn \|-(sibling)-> katherine
+  jake \|-(intimate)-> evelyn \|-(sibling)-> katherine
+  noah \|-(intimate)-> evelyn \|-(sibling)-> katherine
+  hollis \|-(intimate)-> evelyn \|-(sibling)-> katherine
+  jake \|-(nemesis)-> noah \|-(parent)-> katherine
+  noah \|-(parent)-> evelyn \|-(parent)-> katherine
+  jake \|-(intimate)-> evelyn \|-(parent)-> katherine
+  noah \|-(intimate)-> evelyn \|-(parent)-> katherine
+  hollis \|-(intimate)-> evelyn \|-(parent)-> katherine
+  hollis \|-(business-partner)-> noah \|-(parent)-> katherine
 
 
 It's important to note that nothing explodes when a cycle is found.
@@ -453,7 +460,7 @@ cycles between ``evelyn`` and herself:
 
 
 Acquisition Nonsense
-=====================
+--------------------
 
 Zope 2 requires almost every object to support acquisition in order to
 function (it is required for security and traversal).  Below we will perform
@@ -541,3 +548,18 @@ of ``sources`` and ``targets`` will be restored.
 We may want to consider rewrapping the targets and sources on the
 relationship object, to make them directly useful.  It's not clear whether
 there's much to gain by doing so though.
+
+
+Credits
+-------
+
+Author: Alec Mitchell <apm13@columbia.edu>
+
+Based on the index and relationship container from zc.relationship by
+Gary Poster from Zope Corporation, and the port of the Zope intid utility
+to Zope 2 by Whit Morriss in five.intid.  This package includes a slightly
+modified version of ``container.txt`` from zc.relationship which is copyright
+Zope Corporation and distributed under the ZPL.  The package was mostly
+inspired by ideas in the doctests of that product.
+
+This work was partly sponsored by The Daily Reel (http://www.thedailyreel.com)
