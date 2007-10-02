@@ -89,16 +89,8 @@ us with an ``app`` an ``IIntId`` utility provided by the
 ``five.intid`` package.  Additionally, we need to create a
 relationship container to use:
 
-    >>> from zope.app.testing import placelesssetup
-    >>> placelesssetup.setUp()
-    >>> import Products.Five
-    >>> from Products.Five import zcml
-    >>> from plone import relations
-    >>> zcml.load_config('meta.zcml', Products.Five)
-    >>> zcml.load_config('permissions.zcml', Products.Five)
-    >>> zcml.load_config('configure.zcml', Products.Five)
-    >>> zcml.load_config('configure.zcml', relations)
-    >>> relations.tests.setUp(app)
+    >>> from plone.relations import tests
+    >>> tests.setUp(app)
 
     >>> import transaction
     >>> from plone.relations import interfaces
@@ -559,7 +551,7 @@ of ``sources`` and ``targets`` will be restored.
     [<Demo jake>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
 
 
-    >>> placelesssetup.tearDown()
+    >>> tests.tearDown()
 
 Credits
 -------

@@ -2,6 +2,7 @@ import unittest
 
 from zope.testing import doctest
 from zope.testing.doctestunit import DocTestSuite
+from zope.app.testing import placelesssetup
 from Testing import ZopeTestCase as ztc
 
 # these are used by setup
@@ -28,6 +29,15 @@ def ChinatownSetUp(app):
         app._setObject(c, Demo(c))
 
 def setUp(app):
+    # turn on all needed zcml
+    placelesssetup.setUp()
+    import Products.Five
+    from Products.Five import zcml
+    from plone import relations
+    zcml.load_config('meta.zcml', Products.Five)
+    zcml.load_config('permissions.zcml', Products.Five)
+    zcml.load_config('configure.zcml', Products.Five)
+    zcml.load_config('configure.zcml', relations)
     # Make a site, turn on the local site hooks, add the five.intid utility
     from zope.app.component.hooks import setSite, setHooks
     if not USE_LSM:
@@ -37,6 +47,9 @@ def setUp(app):
     setSite(app)
     setHooks()
     contentSetUp(app)
+
+def tearDown():
+    placelesssetup.tearDown()
 
 optionflags = doctest.ELLIPSIS
 def test_suite():
