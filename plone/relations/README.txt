@@ -89,6 +89,17 @@ us with an ``app`` an ``IIntId`` utility provided by the
 ``five.intid`` package.  Additionally, we need to create a
 relationship container to use:
 
+    >>> from zope.app.testing import placelesssetup
+    >>> placelesssetup.setUp()
+    >>> import Products.Five
+    >>> from Products.Five import zcml
+    >>> from plone import relations
+    >>> zcml.load_config('meta.zcml', Products.Five)
+    >>> zcml.load_config('permissions.zcml', Products.Five)
+    >>> zcml.load_config('configure.zcml', Products.Five)
+    >>> zcml.load_config('configure.zcml', relations)
+    >>> relations.tests.setUp(app)
+
     >>> import transaction
     >>> from plone.relations import interfaces
     >>> from plone.relations.container import Z2RelationshipContainer
@@ -471,19 +482,19 @@ some sanity checks to ensure that the objects involved are wrapped in ways
 that meet Zope 2's expectations:
 
     >>> list(container.findSources(target=app['katherine']))[0].aq_chain
-    [<Demo evelyn>, <Application at >]
+    [<Demo evelyn>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
     >>> list(container.findTargets(source=app['hollis'],
     ...                            relation='business-partner'))[0].aq_chain
-    [<Demo noah>, <Application at >]
+    [<Demo noah>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
     >>> list(container.findRelationships(source=app['evelyn'],
     ...                          target=app['katherine']))[0][0].aq_chain
-    [<Relationship 'sibling' from (<Demo evelyn>,) to (<Demo katherine>,)>, <plone.relations.container.Z2RelationshipContainer object at ...>, <Application at >]
+    [<Relationship 'sibling' from (<Demo evelyn>,) to (<Demo katherine>,)>, <plone.relations.container.Z2RelationshipContainer object at ...>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
     >>> list(list(container.findRelationships(source=app['evelyn'],
     ...                      target=app['katherine']))[0][0].targets)[0].aq_chain
-    [<Demo katherine>, <Application at >]
+    [<Demo katherine>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
     >>> list(list(container.findRelationships(source=app['evelyn'],
     ...                      target=app['katherine']))[0][0].sources)[0].aq_chain
-    [<Demo evelyn>, <Application at >]
+    [<Demo evelyn>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
 
 As you can see, even as returned from the search the targets and
 sources have their original wrapping, the relationships are wrapped by
@@ -506,18 +517,18 @@ original wrapping as well, even after ghosting:
     ...    _rel.sources._p_deactivate()
     >>> container._p_deactivate()
     >>> list(rel.targets)[0].aq_chain
-    [<Demo katherine>, <Application at >]
+    [<Demo katherine>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
     >>> list(container.findSources(target=app['katherine']))[0].aq_chain
-    [<Demo evelyn>, <Application at >]
+    [<Demo evelyn>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
     >>> list(container.findTargets(source=app['hollis'],
     ...                            relation='business-partner'))[0].aq_chain
-    [<Demo noah>, <Application at >]
+    [<Demo noah>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
     >>> list(container.findRelationships(source=app['evelyn'],
     ...                          target=app['katherine']))[0][0].aq_chain
-    [<Relationship 'sibling' from (<Demo evelyn>,) to (<Demo katherine>,)>, <plone.relations.container.Z2RelationshipContainer object at ...>, <Application at >]
+    [<Relationship 'sibling' from (<Demo evelyn>,) to (<Demo katherine>,)>, <plone.relations.container.Z2RelationshipContainer object at ...>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
     >>> list(list(container.findRelationships(source=app['evelyn'],
     ...                      target=app['katherine']))[0][0].targets)[0].aq_chain
-    [<Demo katherine>, <Application at >]
+    [<Demo katherine>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
 
 All of the wrappers are preserved except those on the ``sources`` and
 ``targets``, which for this reason mostly shouldn't be directly
@@ -529,10 +540,10 @@ What happens when we create a relationship to an explicitly rewrapped object:
     >>> rel = Relationship((app['katherine'],),(app['jake'].__of__(container),))
     >>> container.add(rel)
     >>> list(rel.targets)[0].aq_chain
-    [<Demo jake>, <Application at >]
+    [<Demo jake>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
     >>> list(container.findTargets(source=app['katherine'],
     ...                            relation=None))[0].aq_chain
-    [<Demo jake>, <Application at >]
+    [<Demo jake>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
 
 The retrieval via search returns the object only wrapped by its
 original containment, regardless of how it was wrapped when used in
@@ -545,12 +556,10 @@ of ``sources`` and ``targets`` will be restored.
     >>> rel.targets._p_deactivate()
     >>> list(list(container.findRelationships(source=app['katherine'],
     ...                                relation=None))[0][0].targets)[0].aq_chain
-    [<Demo jake>, <Application at >]
+    [<Demo jake>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
 
-We may want to consider rewrapping the targets and sources on the
-relationship object, to make them directly useful.  It's not clear whether
-there's much to gain by doing so though.
 
+    >>> placelesssetup.tearDown()
 
 Credits
 -------

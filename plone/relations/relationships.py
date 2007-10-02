@@ -76,6 +76,9 @@ class Relationship(RelationshipBase):
                                  tuple(self.sources),
                                  tuple(self.targets))
 
+# A version of the class with acquisition added so that Zope 2 security
+# checks may be performed.
+class Z2Relationship(Relationship, Explicit):
     # a bit of a kludge because the Five version of intid needs this
     def getPhysicalPath(self):
         path = (str(self.__name__),)
@@ -83,11 +86,6 @@ class Relationship(RelationshipBase):
         if p is not None:
             path = p.getPhysicalPath() + path
         return path
-
-# A version of the class with acquisition added so that Zope 2 security
-# checks may be performed.
-class Z2Relationship(Relationship, Explicit):
-    pass
 
 class ComplexRelationshipAdapter(object):
     interface.implements(interfaces.IComplexRelationship)

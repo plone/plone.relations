@@ -20,6 +20,17 @@ registered as a persistent local utility (preferably named), in this
 case that's not necessary.  However it does need to be placed in the
 database to get a connection::
 
+    >>> from zope.app.testing import placelesssetup
+    >>> placelesssetup.setUp()
+    >>> import Products.Five
+    >>> from Products.Five import zcml
+    >>> from plone import relations
+    >>> zcml.load_config('meta.zcml', Products.Five)
+    >>> zcml.load_config('permissions.zcml', Products.Five)
+    >>> zcml.load_config('configure.zcml', Products.Five)
+    >>> zcml.load_config('configure.zcml', relations)
+    >>> relations.tests.setUp(app)
+
     >>> import transaction
     >>> from plone.relations import interfaces
     >>> from plone.relations.container import RelationshipContainer
@@ -787,3 +798,6 @@ relationship container return the actual intids.
 The containers include three methods for these sorts of use cases:
 `findTargetTokens`, `findSourceTokens`, and `findRelationshipTokens`.  They
 take the same arguments as their similarly-named cousins.
+
+
+    >>> placelesssetup.tearDown()
