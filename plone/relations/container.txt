@@ -79,10 +79,7 @@ examine some relatively simple cases.
     >>> container.add(Relationship((app['ob0'],), (app['ob3'],)))
     >>> container.add(Relationship((app['ob0'],), (app['ob4'],)))
     >>> container.add(Relationship((app['ob2'],), (app['ob5'],)))
-    >>> transaction.commit() # this is indicative of a bug in ZODB; if you
-    ... # do not do this then new objects will deactivate themselves into
-    ... # nothingness when _p_deactivate is called
-
+    >>> sp = transaction.savepoint(optimistic=True)
 
 Now there are six direct relationships (all of the relationships point down
 in the diagram)::
