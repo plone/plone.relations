@@ -478,9 +478,6 @@ that meet Zope 2's expectations:
     >>> list(container.findTargets(source=app['hollis'],
     ...                            relation='business-partner'))[0].aq_chain
     [<Demo noah>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
-    >>> list(container.findRelationships(source=app['evelyn'],
-    ...                          target=app['katherine']))[0][0].aq_chain
-    [<Relationship 'sibling' from (<Demo evelyn>,) to (<Demo katherine>,)>, <plone.relations.container.Z2RelationshipContainer object at ...>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
     >>> list(list(container.findRelationships(source=app['evelyn'],
     ...                      target=app['katherine']))[0][0].targets)[0].aq_chain
     [<Demo katherine>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
@@ -489,11 +486,11 @@ that meet Zope 2's expectations:
     [<Demo evelyn>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
 
 As you can see, even as returned from the search the targets and
-sources have their original wrapping, the relationships are wrapped by
-their container (this is important if the relationships need to
-interact with the security machinery).  The ``sources`` and
-``targets`` attributes of a returned relationship will to have their
-original wrapping as well, even after ghosting:
+sources have their original wrapping.  Relationships are not wrapped,
+though they can be explicitly wrapped with some available context when
+security checks are needed.  The ``sources`` and ``targets``
+attributes of a returned relationship will to have their original
+wrapping as well, even after ghosting:
 
     >>> evelyn = list(container.findSources(target=app['katherine']))[0]
     >>> noah = list(container.findTargets(source=app['hollis'],
@@ -515,9 +512,6 @@ original wrapping as well, even after ghosting:
     >>> list(container.findTargets(source=app['hollis'],
     ...                            relation='business-partner'))[0].aq_chain
     [<Demo noah>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
-    >>> list(container.findRelationships(source=app['evelyn'],
-    ...                          target=app['katherine']))[0][0].aq_chain
-    [<Relationship 'sibling' from (<Demo evelyn>,) to (<Demo katherine>,)>, <plone.relations.container.Z2RelationshipContainer object at ...>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
     >>> list(list(container.findRelationships(source=app['evelyn'],
     ...                      target=app['katherine']))[0][0].targets)[0].aq_chain
     [<Demo katherine>, <Application at >, <ZPublisher.BaseRequest.RequestContainer object at ...>]
