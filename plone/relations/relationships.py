@@ -1,4 +1,4 @@
-from Acquisition import Explicit, aq_parent, aq_inner, aq_base
+from Acquisition import Implicit, aq_parent, aq_inner, aq_base
 import persistent
 from BTrees.IIBTree import IITreeSet
 from zope import interface
@@ -85,7 +85,7 @@ class Relationship(RelationshipBase):
 
 # A version of the class with acquisition in case things need to be
 # acquirable from the relationship.
-class Z2Relationship(Relationship, Explicit):
+class Z2Relationship(Relationship, Implicit):
     pass
 
 class ComplexRelationshipAdapter(object):
