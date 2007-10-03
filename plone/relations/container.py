@@ -214,14 +214,6 @@ class RelationshipContainer(Container):
             "abcdefghijklmnopqrtstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-1234567890",
             30)) # somewhat less than 64 ** 30 variations (64*63*...*35)
 
-    # a bit of a kludge because the Five version of intid needs this
-    def getPhysicalPath(self):
-        path = (str(self.__name__),)
-        p =  aq_parent(aq_inner(self)) or self.__parent__
-        if p is not None:
-            path = p.getPhysicalPath() + path
-        return path
-
 # A version of the class with acquisition added so that Zope 2 security
 # checks may be performed on the contained objects.  Note: when this container
 # is acquisition wrapped, you will not be able to iterate over its keys using

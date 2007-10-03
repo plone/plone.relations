@@ -71,21 +71,22 @@ class Relationship(RelationshipBase):
         return property(get, set)
 
     def __repr__(self):
+        try:
+            sources = tuple(self.sources)
+        except AttributeError:
+            sources = '<Missing>'
+        try:
+            targets = tuple(self.targets)
+        except AttributeError:
+            targets = '<Missing>'
         return '<Relationship %r from %r to %r>' % (
                                  interfaces.IComplexRelationship(self).relation,
-                                 tuple(self.sources),
-                                 tuple(self.targets))
+                                 sources, targets)
 
-# A version of the class with acquisition added so that Zope 2 security
-# checks may be performed.
+# A version of the class with acquisition in case things need to be
+# acquirable from the relationship.
 class Z2Relationship(Relationship, Explicit):
-    # a bit of a kludge because the Five version of intid needs this
-    def getPhysicalPath(self):
-        path = (str(self.__name__),)
-        p = aq_parent(aq_inner(self)) or self.__parent__
-        if p is not None:
-            path = p.getPhysicalPath() + path
-        return path
+    pass
 
 class ComplexRelationshipAdapter(object):
     interface.implements(interfaces.IComplexRelationship)
