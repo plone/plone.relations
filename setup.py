@@ -22,7 +22,7 @@ setup(name='plone.relations',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-          "zc.relationship",
+          "zc.relationship==1.0.2",
           "five.intid",
       ],
       )
