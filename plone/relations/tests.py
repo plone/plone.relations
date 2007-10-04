@@ -41,8 +41,14 @@ def setUp(app):
     # Make a site, turn on the local site hooks, add the five.intid utility
     from zope.app.component.hooks import setSite, setHooks
     if not USE_LSM:
-        from collective.testing.utils import monkeyAppAsSite
-        monkeyAppAsSite()
+        # monkey in our hooks
+        from Products.Five.site.metaconfigure import classSiteHook
+        from Products.Five.site.localsite import FiveSite
+        from zope.interface import classImplements
+        from zope.app.component.interfaces import IPossibleSite
+        klass = app.__class__
+        classSiteHook(klass, FiveSite)
+        classImplements(klass, IPossibleSite)
     add_intids(app)
     setSite(app)
     setHooks()
