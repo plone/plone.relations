@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '1.0b1'
+version = '1.0b2'
 
 setup(name='plone.relations',
       version=version,
@@ -22,7 +22,7 @@ setup(name='plone.relations',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-          "zc.relationship==1.0.2",
+          "zc.relationship>=1.0.2,<2.0dev",
           "five.intid",
       ],
       )
