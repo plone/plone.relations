@@ -148,10 +148,14 @@ class RelationshipContainer(Container):
         _update_query(query, relation, state, context)
         if source is not None:
             query['source'] = source
+            if target is not None:
+                targetQuery = tokenize({'target': target})
+            else:
+                targetQuery = None
             return self.relationIndex.isLinked(
                 tokenize(query),
                 maxDepth, filter and ResolvingFilter(filter, self),
-                target and tokenize({'target': target}),
+                targetQuery,
                 targetFilter=minDepthFilter(minDepth),
                 transitiveQueriesFactory=transitivity)
         elif target is not None:
@@ -173,10 +177,14 @@ class RelationshipContainer(Container):
         _update_query(query, relation, state, context)
         if source is not None:
             query['source'] = source
+            if target is not None:
+                targetQuery = tokenize({'target': target})
+            else:
+                targetQuery = None
             res = self.relationIndex.findRelationshipTokenChains(
                 tokenize(query),
                 maxDepth, filter and ResolvingFilter(filter, self),
-                target and tokenize({'target': target}),
+                targetQuery,
                 targetFilter=minDepthFilter(minDepth),
                 transitiveQueriesFactory=transitivity)
             return self._forward(res)
