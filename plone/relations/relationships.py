@@ -19,13 +19,15 @@ class IntIdSubObjectWrapper(IITreeSet):
         resolver = getattr(self, '_v_intid_resolver', None)
         if resolver is None:
             resolver = self._v_intid_resolver = getUtility(IIntIds).getId
-        return resolver(obj)
+        relatable = interfaces.IRelatableProxy(obj, alternate=obj)
+        return resolver(relatable)
 
     def _get_object(self, intid):
         resolver = getattr(self, '_v_object_resolver', None)
         if resolver is None:
             resolver = self._v_object_resolver = getUtility(IIntIds).getObject
-        return resolver(intid)
+        obj = resolver(intid)
+        return interfaces.IRelatableUnProxy(obj, alternate=obj)
 
     def __iter__(self):
         for item in IITreeSet.__iter__(self):

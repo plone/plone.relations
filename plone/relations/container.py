@@ -11,8 +11,19 @@ from zc.relationship.shared import ResolvingFilter
 from zc.relationship.shared import minDepthFilter
 from zc.relationship.shared import Container, AbstractContainer
 from plone.relations import interfaces
+from zc.relationship.index import generateToken, resolveToken
+from plone.relations.interfaces import IRelatableProxy, IRelatableUnProxy
 
 _marker = interfaces._marker
+
+def dump(obj, index, cache):
+    relatable = IRelatableProxy(obj, alternate=obj)
+    return generateToken(relatable, index, cache)
+
+def load(token, index, cache):
+    obj = resolveToken(token, index, cache)
+    related = IRelatableUnProxy(obj, alternate=obj)
+    return related
 
 def _update_query(query, relation, state, context):
     if relation != _marker:
@@ -49,7 +60,7 @@ class RelationshipContainer(Container):
 
     implements(interfaces.IComplexRelationshipContainer)
     def __init__(self,
-                 dumpSource=None, loadSource=None, sourceFamily=None,
+                 dumpSource=dump, loadSource=load, sourceFamily=None,
                  dumpTarget=None, loadTarget=None, targetFamily=None,
                  dumpRelation=None, loadRelation=None, relationFamily=None,
                  dumpState=None, loadState=None, stateFamily=None,
