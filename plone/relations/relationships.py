@@ -1,5 +1,4 @@
-from Acquisition import Implicit, aq_parent, aq_inner, aq_base
-import persistent
+from Acquisition import Implicit
 from BTrees.IIBTree import IITreeSet
 from zope import interface
 from zope.component import adapts

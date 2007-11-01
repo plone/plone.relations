@@ -1,8 +1,6 @@
 from zope import interface
-from zope.app.container.interfaces import IReadContainer
 from zc.relationship.interfaces import IRelationship
 from zc.relationship.interfaces import IRelationshipContainer
-import zope.index.interfaces
 
 _marker = []
 

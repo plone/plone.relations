@@ -1,12 +1,11 @@
 import random
-from Acquisition import Explicit, aq_parent, aq_inner, aq_base
+from Acquisition import Explicit, aq_base
 from BTrees import OIBTree
 import zope.app.container.btree
 from zope.interface import implements
 from zope.event import notify
 from zope.app.container.contained import ObjectRemovedEvent
 from zc.relationship import index
-from zc.relationship.interfaces import ICircularRelationshipPath
 from zc.relationship.shared import ResolvingFilter
 from zc.relationship.shared import minDepthFilter
 from zc.relationship.shared import Container, AbstractContainer
