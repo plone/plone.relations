@@ -17,7 +17,7 @@ class IntIdSubObjectWrapper(IITreeSet):
     def _get_id(self, obj):
         resolver = getattr(self, '_v_intid_resolver', None)
         if resolver is None:
-            resolver = self._v_intid_resolver = getUtility(IIntIds).register
+            resolver = self._v_intid_resolver = getUtility(IIntIds).getId
         relatable = interfaces.IRelatableProxy(obj, alternate=obj)
         return resolver(relatable)
 
