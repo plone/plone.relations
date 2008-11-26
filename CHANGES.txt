@@ -1,7 +1,57 @@
 Changelog
 =========
 
-0.1 - Unreleased
+1.0rc1 - Unreleased
+-------------------
 
-- Initial package structure.
-  [zopeskel]
+- Solved #8631.
+  [regebro]
+
+1.0b5 - 2008-05-10
+------------------
+
+- Removed unused import statements as reported by pyflakes.
+  [tomster]
+
+- Don't assume an IntId already exists.
+  [alecm]
+
+- Prep release with fixed dependencies, and new adapter based relationship
+  proxying.
+  [alecm]
+
+- Added support for relationships to proxy objects obtained using adaptation.
+  [massimo]
+
+- It's not safe to use 'not target' when target could be a content item (e.g.
+  a folderish one for which an empty folder is false). The new code is now
+  identical to the same pattern used in zc.relationship.
+  [optilude]
+
+- Update version and zc.relationship dependency.
+  [alecm]
+
+- Remove collective.testing dependency.
+  [alecm]
+
+- Use a savepoint not a full commit during test.
+  [alecm]
+
+- We no longer guarantee that the relation objects themselves are wrapped on
+  retrieval, only that they can be wrapped as needed.
+  [alecm]
+
+- We need implicit acquisition in order to obtain getPhysicalRoot for
+  workflow/template expressions.
+  [alecm]
+
+- Remove getPhysicalPath methods as they are no longer needed, make the str
+  representation of relationships show something reasonable even if some of
+  the sources/targets are missing.
+  [alecm]
+
+- Early contributions.
+  [optilude, ramon, wichert]
+
+- Initial implementation.
+  [alecm]

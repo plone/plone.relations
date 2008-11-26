@@ -4,9 +4,6 @@ Introduction
 Tools for defining and querying complex relationships between objects. This
 product builds on and requires zc.relationship and also five.intid.
 
-See plone/relations/README.txt for complete documentation.
-
-
 Credits
 -------
 

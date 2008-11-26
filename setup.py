@@ -1,12 +1,23 @@
+import os
 from setuptools import setup, find_packages
 
 version = '1.0rc1'
 
+def read(*rnames):
+    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+
+long_description = (
+    read('README.txt')
+    + '\n' +
+    read('CHANGES.txt')
+    + '\n' +
+    read('plone', 'relations', 'README.txt')
+    )
+
 setup(name='plone.relations',
       version=version,
       description="Tools for defining and querying complex relationships between objects",
-      long_description=open("README.txt").read() + "\n" +
-                       open("CHANGES.txt").read(),
+      long_description=long_description,
       classifiers=[
         "Framework :: Plone",
         "Framework :: Zope2",
