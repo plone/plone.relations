@@ -1,10 +1,14 @@
 Changelog
 =========
 
-1.0rc1 - Unreleased
+1.0rc1 - 2008-11-26
 -------------------
 
-- Solved #8631.
+- Added a changelog and cleaned up package information boilerplate.
+  [hannosch]
+
+- Getting a relation could cause a write transaction. This solved
+  http://dev.plone.org/plone/ticket/8631.
   [regebro]
 
 1.0b5 - 2008-05-10
