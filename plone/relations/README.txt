@@ -1,10 +1,8 @@
 Introduction
 ------------
 
-Tools for defining and querying complex relationships between objects.  This
-product builds on and requires zc.relationship available in the zope.org svn, 
-and also five.intid available in the Plone collective.  The tests require
-some helpers from collective.testing to run.
+Tools for defining and querying complex relationships between objects. This
+product builds on and requires zc.relationship and also five.intid.
 
 Overview
 --------

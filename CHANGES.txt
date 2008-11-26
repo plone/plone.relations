@@ -1,0 +1,7 @@
+Changelog
+=========
+
+0.1 - Unreleased
+
+- Initial package structure.
+  [zopeskel]
