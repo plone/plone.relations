@@ -32,7 +32,7 @@ setup(name='plone.relations',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-          "zc.relationship<1.1-dev",
+          "zc.relationship==1.1.1",
           "five.intid",
       ],
       )

@@ -1,9 +1,10 @@
 Changelog
 =========
 
-1.0rc2 - unreleased
+1.0rc2 - 2009-03-17
 -------------------
 
+- Depend on zc.relationship 1.1.1 to allow support for ZODB 3.7 and 3.8
 
 1.0rc1 - 2008-11-26
 -------------------
