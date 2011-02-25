@@ -1,10 +1,26 @@
 Changelog
 =========
 
-1.0rc2 - 2009-03-17
+1.0rc4 - unreleased
 -------------------
 
-- Depend on zc.relationship 1.1.1 to allow support for ZODB 3.7 and 3.8
+- Depend on zc.relationship 1.1.1 to allow support for ZODB 3.7 and 3.8.
+  [alecm]
+
+
+1.0rc3 - 2008-12-06
+-------------------
+
+- Peg to 1.0 versions of zc.relationship to maximize backwards
+  compatibility for now.
+  [alecm]
+
+
+1.0rc2 - unreleased
+-------------------
+
+- 1.0rc2 was never released.
+
 
 1.0rc1 - 2008-11-26
 -------------------
@@ -15,6 +31,7 @@ Changelog
 - Getting a relation could cause a write transaction. This solved
   http://dev.plone.org/plone/ticket/8631.
   [regebro]
+
 
 1.0b5 - 2008-05-10
 ------------------
