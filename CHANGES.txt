@@ -4,6 +4,9 @@ Changelog
 1.0rc4 - unreleased
 -------------------
 
+- Depend on setuptools as we use namespace packages.
+  [maurits]
+
 - Depend on zc.relationship 1.1.1 or higher.
   [maurits]
 
