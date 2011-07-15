@@ -22,7 +22,7 @@ interface.  These interfaces are described below:
     implementation these must all be persistent objects from
     the ZODB (or more generally, objects for which and
     ``intid`` can be generated using the available ``IIntId``
-    utility (cf ``zope.app.intid`` and ``five.intid``)).
+    utility (cf ``zope.intid`` and ``five.intid``)).
 
     IComplexRelationship adds a relationship predicate to
     indicate the type of relationship involved.  This

@@ -87,9 +87,9 @@ class IComplexRelationshipContainer(IRelationshipContainer):
         """See IBidirectionalRelationshipIndex: includes support for efficient
         filtering on state, context, and relationship.
         """
-    
+
 class IRelatableProxy(interface.Interface):
     """It's an interface that describes an object which is capable to partecipating in a relationship"""
-    
+
 class IRelatableUnProxy(interface.Interface):
     """This interface describes an object which is a real partecipating to a relationship"""

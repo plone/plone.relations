@@ -1,6 +1,6 @@
 from itertools import chain
 from zope.component import getUtility
-from zope.app.intid.interfaces import IIntIds
+from zope.intid.interfaces import IIntIds
 
 class LazyList(object):
     """A class that makes an iterator look like a sequence,

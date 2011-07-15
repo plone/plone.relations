@@ -1,10 +1,10 @@
 import random
 from Acquisition import Explicit, aq_base
 from BTrees import OIBTree
-import zope.app.container.btree
+import zope.container.btree
 from zope.interface import implements
 from zope.event import notify
-from zope.app.container.contained import ObjectRemovedEvent
+from zope.lifecycleevent import ObjectRemovedEvent
 from zc.relationship import index
 from zc.relationship.shared import ResolvingFilter
 from zc.relationship.shared import minDepthFilter
@@ -100,7 +100,7 @@ class RelationshipContainer(Container):
             **kwargs)
         self.relationIndex = ix
         ix.__parent__ = self
-        zope.app.container.btree.BTreeContainer.__init__(self)
+        zope.container.btree.BTreeContainer.__init__(self)
 
     def reindex(self, object):
         assert object.__parent__ is self

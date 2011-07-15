@@ -114,7 +114,7 @@ More interestingly, lets examine some of the searching methods.  What are the
 direct targets of ob0?
 
     >>> container.findTargets(app['ob0']) # doctest: +ELLIPSIS
-    <generator object at ...>
+    <generator object ...>
 
 
 Ah-ha! It's a generator!  Let's try that again.
@@ -194,7 +194,7 @@ finds all sources.  Using the same relationship tree built above, we'll search
 for some sources.
 
     >>> container.findSources(app['ob0']) # doctest: +ELLIPSIS
-    <generator object at ...>
+    <generator object ...>
     >>> list(container.findSources(app['ob0']))
     []
     >>> list(o.id for o in container.findSources(app['ob4']))
@@ -242,7 +242,7 @@ or `target` must be passed in.  A search depth defaults to one relationship
 deep, like the other methods.
 
     >>> container.findRelationships(source=app['ob0']) # doctest: +ELLIPSIS
-    <generator object at ...>
+    <generator object ...>
     >>> sorted(
     ...     [repr(rel) for rel in path]
     ...     for path in container.findRelationships(source=app['ob0']))

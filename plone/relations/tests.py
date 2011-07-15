@@ -1,8 +1,8 @@
+import doctest
+from doctest import DocTestSuite
 import unittest
 
-from zope.testing import doctest
-from zope.testing.doctestunit import DocTestSuite
-from zope.app.testing import placelesssetup
+from Testing.ZopeTestCase import placeless
 from Testing import ZopeTestCase as ztc
 
 # these are used by setup
@@ -30,22 +30,21 @@ def ChinatownSetUp(app):
 
 def setUp(app):
     # turn on all needed zcml
-    placelesssetup.setUp()
+    placeless.setUp()
     import Products.Five
-    from Products.Five import zcml
+    from Zope2.App import zcml
     from plone import relations
     zcml.load_config('meta.zcml', Products.Five)
-    zcml.load_config('permissions.zcml', Products.Five)
     zcml.load_config('configure.zcml', Products.Five)
     zcml.load_config('configure.zcml', relations)
     # Make a site, turn on the local site hooks, add the five.intid utility
-    from zope.app.component.hooks import setSite, setHooks
+    from zope.site.hooks import setSite, setHooks
     if not USE_LSM:
         # monkey in our hooks
         from Products.Five.site.metaconfigure import classSiteHook
         from Products.Five.site.localsite import FiveSite
         from zope.interface import classImplements
-        from zope.app.component.interfaces import IPossibleSite
+        from zope.site.interfaces import IPossibleSite
         klass = app.__class__
         classSiteHook(klass, FiveSite)
         classImplements(klass, IPossibleSite)
@@ -55,7 +54,7 @@ def setUp(app):
     contentSetUp(app)
 
 def tearDown():
-    placelesssetup.tearDown()
+    placeless.tearDown()
 
 optionflags = doctest.ELLIPSIS
 def test_suite():
@@ -71,6 +70,3 @@ def test_suite():
     lazy = DocTestSuite('plone.relations.lazylist')
 
     return unittest.TestSuite((lazy, integration, readme))
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

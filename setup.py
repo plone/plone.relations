@@ -1,7 +1,7 @@
 import os
 from setuptools import setup, find_packages
 
-version = '1.0rc4'
+version = '2.0'
 
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
@@ -35,5 +35,10 @@ setup(name='plone.relations',
           "setuptools",
           "zc.relationship>=1.1.1",
           "five.intid",
+          "zope.container",
+          "zope.intid",
+          "zope.lifecycleevent",
+          "zope.site",
+          "Zope2 >= 2.13",
       ],
       )

@@ -3,7 +3,7 @@ from BTrees.IIBTree import IITreeSet
 from zope import interface
 from zope.component import adapts
 from zope.component import getUtility
-from zope.app.intid.interfaces import IIntIds
+from zope.intid.interfaces import IIntIds
 from zc.relationship.shared import Relationship as RelationshipBase
 from zc.relationship import interfaces as zc_interfaces
 from plone.relations import interfaces
