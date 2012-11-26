@@ -89,7 +89,11 @@ class IComplexRelationshipContainer(IRelationshipContainer):
         """
 
 class IRelatableProxy(interface.Interface):
-    """It's an interface that describes an object which is capable to partecipating in a relationship"""
+    """It's an interface that describes an object which is capable to
+    participating in a relationship
+    """
 
 class IRelatableUnProxy(interface.Interface):
-    """This interface describes an object which is a real partecipating to a relationship"""
+    """This interface describes an object which is a real participating to a
+    relationship
+    """
