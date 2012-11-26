@@ -50,7 +50,7 @@ def _set_state(obj, dump, load, family):
 # Acquisition base classes.
 class RelationshipContainer(Container):
 
-    # Set aatus so that we can retrieve entries, which are never protected.
+    # Set status so that we can retrieve entries, which are never protected.
     # The core methods are all protected via zcml declarations.
     # This is only necessary because of the use of restrictedTraverse in
     # five.intid's keyreference lookup. (see OFS.Folder)

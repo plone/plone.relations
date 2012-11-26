@@ -120,7 +120,7 @@ contexts from the 1974 film _Chinatown_:
     >>> rel2 = Relationship((app['hollis'],), (app['noah'],), relation='business-partner')
     >>> container.add(rel2)
 
-Note that there is a default adatper for IRelationship objects which
+Note that there is a default adapter for IRelationship objects which
 provides IComplexRelationship using a simple attribute on the
 relationship.
 
